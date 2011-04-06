@@ -16,7 +16,19 @@ int Window_Height = 400;
 
 void display(void)
 {
+	glutSwapBuffers();
+}
+
+void init(int width, int height)
+{
+	glClearColor(0.1f,0.1f,0.1f,0.1f);
+	glClearDepth(1.0);
+	glDepthFunc(GL_LESS);
 	
+	glShadeModel(GL_SMOOTH);
+	
+	glEnable(GL_DEPTH_TEST);
+
 }
 
 int main(int argc, char **argv)
@@ -32,7 +44,9 @@ int main(int argc, char **argv)
 	
 	//glutReshape(&res);
 	
-	glutInit(Window_Width,Window_Height);
+	init(Window_Width, Window_Height);
+	
+	init(Window_Width,Window_Height);
 	glutMainLoop();
 	return 1;
 }
