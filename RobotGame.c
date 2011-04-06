@@ -14,11 +14,25 @@ int Window_ID;
 int Window_Width = 600;
 int Window_Height = 400;
 
-int main(int &argc, char **argv)
+void display(void)
 {
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT DEPTH);
+	
+}
+
+int main(int argc, char **argv)
+{
+	glutInit(&argc, argv);
+	
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(Window_Width, Window_Height);
 	Window_ID = glutCreateWindow(PROGRAM_TITLE);
-	glutInit(Window_Width,Window_Height);
+	glutInitWindowPosition(0,0);
 	
+	glutDisplayFunc(&display);
+	
+	//glutReshape(&res);
+	
+	glutInit(Window_Width,Window_Height);
+	glutMainLoop();
+	return 1;
 }
