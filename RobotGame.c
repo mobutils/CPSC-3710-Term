@@ -18,8 +18,20 @@ int deltaX=0;
 int deltaY=0; 
 int deltaZ=0;
 
-GLfloat lightDiffuse[] = {.9, .9, .9, 5.0};
-GLfloat lightPosition[] = {10.0, 50.0, 10.0, 0.5};  /* Infinite light location. */
+//Robot Global Variables
+float RobX=0.0;
+float RobY=0.0;
+float RobZ=0.0;
+float RobOrient=0.0;
+float antDeg=0.0;
+float antSpeed=0.1;
+
+//Ligthing
+/*GLfloat lightDiffuse[] = {.9, .9, .9, 5.0};
+GLfloat lightPosition[] = {10.0, 50.0, 10.0, 0.5}; */ /* Infinite light location. */
+
+GLUquadricObj *quadratic;
+GLuint texture[5];
 
 void display(void)
 {
@@ -28,7 +40,7 @@ void display(void)
 	glLoadIdentity();
 	
 	
-	gluLookAt(10.0+deltaX,2.5+deltaY,10.0+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+	gluLookAt(10.0+deltaX,2.5+deltaY,0.0+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
 	
 	
 	//Draw ground
@@ -60,9 +72,26 @@ void display(void)
 			glTranslatef(10.0f,0.0f,0.0f);
 		}	
 	}
+	//reset position
+	glTranslatef(-105.0f,0.0f,-95.0f);
+	
 	//Draw Buildings
 	
+	//Start drawing Robot
+	//reset position
+	//glLoadIdentity();
 	
+	//draw head
+	glTranslatef(RobX,RobY,RobZ);
+	glutSolidCube(2.0f);
+
+	//draw antenae //sp?	
+	glRotatef(-90.0f,1.0f,0.0f,0.0f);
+	antDeg+=antSpeed;
+	glRotatef(antDeg,0.0f,0.0f,1.0f);
+	gluCylinder(quadratic,0.5f,0.5f,2.0f,8,8);	
+	glRotatef(90.0f,1.0f,0.0f,0.0f);
+	//Done Draw Robot
 	
 	glutSwapBuffers();
 	
@@ -96,6 +125,11 @@ void init(int width, int height)
 	glDepthFunc(GL_LESS);
 	
 	glShadeModel(GL_SMOOTH);
+
+	//setup quadratic
+	quadratic = gluNewQuadric();
+	gluQuadricNormals(quadratic, GLU_SMOOTH);
+	gluQuadricTexture(quadratic, GL_TRUE);
 	
 	//Set up the sun.
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
@@ -113,19 +147,24 @@ int keyPressControl(unsigned char key, int x, int y)
 	{
 		case GLUT_KEY_UP:
 			printf ("KEY: UP press detected\n");
-			deltaZ--;
+			deltaX--;
+			RobX-=1.0;
 		break;
 		case GLUT_KEY_DOWN:
 			printf ("KEY: DOWN press detected\n");
-			deltaZ++;
+			deltaX++;
+			RobX+=1.0;
 		break;
 		case GLUT_KEY_RIGHT:
 			printf ("KEY: RIGHT press detected\n");
-			deltaX++;
+			deltaZ--;
+			RobZ-=1.0;
 		break;
 		case GLUT_KEY_LEFT:
 			printf ("KEY: LEFT press detected\n");
-			deltaX--;
+			deltaZ++;
+			RobZ+=1.0;
+			//printf ("Robz = %f \n",RobZ);
 		break;
 		
 		
