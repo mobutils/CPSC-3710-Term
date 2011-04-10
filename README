@@ -1,0 +1,35 @@
+CPSC 3710 Term Projet
+James Pike, James Oliver
+
+------------------[Tutorial]-----------------------
+
+  => Compilation Instructions
+
+First ensure that you have both the files Makefile and RobotGame.c
+in the file you wish to use. now from in that file type 'make' and
+then execute ./Robot
+
+  => Controls
+
+a - Turn Right can only be performed at street intersections to prevent
+    the robot from blowing up upon impact with buildings.
+
+z - Asks the robot to drive forward, we have given him explicit 
+    instructions not to go off the grid so he will jump back if you try
+    and make him go off it.
+
+---------------[Design Summary]--------------------
+
+
+---------------[Data Structures]-------------------
+
+
+---------------[OpenGL Learned]--------------------
+
+
+-----------------[assumptions]---------------------
+
+
+-------------[Other Documentation]-----------------
+
+
