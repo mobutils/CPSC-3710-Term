@@ -27,6 +27,7 @@ float RobZ=0.0;
 float RobOrient=0.0;
 float antDeg=0.0;
 float antSpeed=0.1; //30 degrees made it look like a strobe
+float headDeg=0.0;
 
 //bool paused;
 
@@ -95,14 +96,16 @@ void display(void)
 		glRotatef(RobOrient,0.0f,1.0f,0.0f);
 	
 		//draw head
+		glRotatef(headDeg,0.0f,0.0f,0.0f);
 		glutSolidCube(0.5f);
+		glRotatef(-headDeg,0.0f,0.0f,0.0f);
 
 		//draw antenae //sp?	
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
 		antDeg+=antSpeed;
 		glRotatef(antDeg,0.0f,0.0f,1.0f);
 		gluCylinder(quadratic,0.1f,0.1f,0.5f,8,8);
-		glRotatef(-antDeg,0.0f,0.0f,1.0f);	
+		glRotatef(-antDeg,0.0f,0.0f,1.0f);
 		glRotatef(90.0f,1.0f,0.0f,0.0f);
 
 		//Draw Body
@@ -226,6 +229,13 @@ int keyPressControl(unsigned char key, int x, int y)
 				RobZ+=1.0;
 				//printf ("Robz = %f \n",RobZ);
 			break;	
+			case GLUT_KEY_F1:
+				printf("KEY: F1 press detected\n");
+				RobOrient+=90.0;
+				if(RobOrient >= 360){
+					RobOrient -= 360;
+				}
+			break;
 		
 		}
 	}
@@ -237,19 +247,55 @@ void pressKey(unsigned char key, int x, int y)
 		switch(key)
 		{
 			case 'p':
-				printf ("KEY: r press detected [PAUSE GAME]\n");
+				printf ("KEY: p press detected [PAUSE GAME]\n");
 				boolpause=1;
 			break;
 			case 'z':
-				printf ("KEY: Z press detected\n");
-				if(deltaX>=0&&deltaX<100){
-					printf ("RESULT: VALID\n");
-					deltaX++;
-					RobX+=1.0;
+				if(RobOrient==0.0){
+					printf ("KEY: Z press detected [DIR=FORWARD]\n");
+					if(deltaX>=0&&deltaX<100){
+						printf ("RESULT: VALID\n");
+						deltaX++;
+						RobX+=1.0;
+					}
+					else{
+						printf ("RESULT:BOUND X(%i)\n",deltaX);
+					}
 				}
-				else{
-					printf ("RESULT:BOUND X(%i)\n",deltaX);
+				else if(RobOrient==90.0){
+					printf ("KEY: Z press detected [DIR=LEFT]\n");
+					if(deltaZ>=0&&deltaZ<100){
+						printf ("RESULT: VALID\n");
+						deltaZ++;
+						RobZ+=1.0;
+					}
+					else{
+						printf ("RESULT:BOUND X(%i)\n",deltaX);
+					}
 				}
+				else if(RobOrient==180.0){
+					printf ("KEY: Z press detected [DIR=BACK]\n");
+					if(deltaX>=0&&deltaX<100){
+						printf ("RESULT: VALID\n");
+						deltaX--;
+						RobX-=1.0;
+					}
+					else{
+						printf ("RESULT:BOUND X(%i)\n",deltaX);
+					}
+				}
+				else if(RobOrient==270.0){
+					printf ("KEY: Z press detected [DIR=BACK]\n");
+					if(deltaZ>=0&&deltaZ<100){
+						printf ("RESULT: VALID\n");
+						deltaZ--;
+						RobZ-=1.0;
+					}
+					else{
+						printf ("RESULT:BOUND X(%i)\n",deltaX);
+					}
+				}
+				else{printf("ERROR UNDEFINED DIRECTION\n");}
 				//printf ("Robz = %f \n",RobZ);
 			break;	
 			case 'r':
@@ -275,11 +321,11 @@ void pressKey(unsigned char key, int x, int y)
 		switch(key)
 		{
 			case 'p':
-				printf ("KEY: r press detected [UNPAUSE GAME]\n");
+				printf ("KEY: p press detected [UNPAUSE GAME]\n");
 				boolpause=0;
 			break;
 			default:
-				printf("Game Paused press any key to unpause\n");
+				printf("Game Paused press 'p' to unpause\n");
 			break;
 		 }
 	}
