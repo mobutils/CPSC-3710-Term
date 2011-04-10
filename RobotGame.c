@@ -21,9 +21,9 @@ int deltaY=0;
 int deltaZ=0;
 
 //Robot Global Variables
-float RobX=0.0;
-float RobY=0.0;
-float RobZ=0.0;
+int RobX=0.0;
+int RobY=0.0;
+int RobZ=0.0;
 float RobOrient=0.0;
 float antDeg=0.0;
 float antSpeed=0.1; //30 degrees made it look like a strobe
@@ -43,6 +43,11 @@ void display(void)
 	if(boolpause==0){
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
+
+		if(RobX > 100){ RobX =98; deltaX=98; printf("ERROR CAUGHT (BoundX100)\n");}
+		if(RobX < 0)  { RobX = 2; deltaX=2 ; printf("ERROR CAUGHT (BoundX0)\n");}
+		if(RobZ > 100){ RobZ =98; deltaZ=98; printf("ERROR CAUGHT (BoundZ100)\n");}
+		if(RobZ < 0)  { RobZ = 2; deltaZ=2 ; printf("ERROR CAUGHT (BoundZ0)\n");}
 	
 	
 		gluLookAt(5.0+deltaX,5.0+deltaY,0.0+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
@@ -231,10 +236,21 @@ int keyPressControl(unsigned char key, int x, int y)
 			break;	
 			case GLUT_KEY_F1:
 				printf("KEY: F1 press detected\n");
-				RobOrient+=90.0;
-				if(RobOrient >= 360){
-					RobOrient -= 360;
+				RobOrient=0.0;
+			break;	
+			case GLUT_KEY_F2:
+				printf("KEY: F2 press detected\n");
+				if(headDeg >= -45.0){
+					RobOrient -= 1.00;
 				}
+				else{printf("sorry the robot can only turn its head so far... press F1 or F3");}
+			break;	
+			case GLUT_KEY_F3:
+				printf("KEY: F3 press detected\n");
+				if(headDeg <= 45){
+					RobOrient += 1.0;
+				}
+				else{printf("sorry the robot can only turn its head so far... press F1 or F2");}
 			break;
 		
 		}
@@ -253,46 +269,62 @@ void pressKey(unsigned char key, int x, int y)
 			case 'z':
 				if(RobOrient==0.0){
 					printf ("KEY: Z press detected [DIR=FORWARD]\n");
-					if(deltaX>=0&&deltaX<100){
+					if(deltaX>=0&&deltaX<=100){
 						printf ("RESULT: VALID\n");
 						deltaX++;
 						RobX+=1.0;
 					}
 					else{
-						printf ("RESULT:BOUND X(%i)\n",deltaX);
+						printf ("RESULT:BOUND X(%i) Z(%i)\n",deltaX,deltaZ);
+					// following code is to correct for error
+					// redundant due to error catch in display
+						deltaX--;
+						RobX-=1.0;
 					}
 				}
 				else if(RobOrient==90.0){
 					printf ("KEY: Z press detected [DIR=LEFT]\n");
-					if(deltaZ>=0&&deltaZ<100){
+					if(deltaZ>=0&&deltaZ<=100){
 						printf ("RESULT: VALID\n");
 						deltaZ++;
 						RobZ+=1.0;
 					}
 					else{
-						printf ("RESULT:BOUND X(%i)\n",deltaX);
+						printf ("RESULT:BOUND X(%i) Z(%i)\n",deltaX,deltaZ);
+					// following code is to correct for error
+					// redundant due to error catch in display
+						deltaZ--;
+						RobZ-=1.0;
 					}
 				}
 				else if(RobOrient==180.0){
 					printf ("KEY: Z press detected [DIR=BACK]\n");
-					if(deltaX>=0&&deltaX<100){
+					if(deltaX>=0&&deltaX<=100){
 						printf ("RESULT: VALID\n");
 						deltaX--;
 						RobX-=1.0;
 					}
 					else{
-						printf ("RESULT:BOUND X(%i)\n",deltaX);
+						printf ("RESULT:BOUND X(%i) Z(%i)\n",deltaX,deltaZ);
+					// following code is to correct for error
+					// redundant due to error catch in display
+						deltaX++;
+						RobX+=1.0;
 					}
 				}
 				else if(RobOrient==270.0){
-					printf ("KEY: Z press detected [DIR=BACK]\n");
-					if(deltaZ>=0&&deltaZ<100){
+					printf ("KEY: Z press detected [DIR=RIGHT]\n");
+					if(deltaZ>=0&&deltaZ<=100){
 						printf ("RESULT: VALID\n");
 						deltaZ--;
 						RobZ-=1.0;
 					}
 					else{
-						printf ("RESULT:BOUND X(%i)\n",deltaX);
+						printf ("RESULT:BOUND X(%i) Z(%i)\n",deltaX,deltaZ);
+					// following code is to correct for error
+					// redundant due to error catch in display
+						deltaZ++;
+						RobZ+=1.0;
 					}
 				}
 				else{printf("ERROR UNDEFINED DIRECTION\n");}
@@ -311,6 +343,32 @@ void pressKey(unsigned char key, int x, int y)
 				RobOrient=0.0;
 				antDeg=0.0;
 				antSpeed=0.1;
+			break;
+			case 'q':
+				printf("KEY: a press detected\n");
+				if(RobX%10<=2 || RobX%10>=8){
+					if(RobZ%10<=2 || RobZ%10>=8){
+						RobOrient-=90.0;
+					}
+					else{printf("Sorry, Not a valid street\n");}
+				}
+				else{printf("Sorry, Not a valid street\n");}
+				if(RobOrient < 0.0){
+					RobOrient += 360;
+				}
+			break;	
+			case 'a':
+				printf("KEY: a press detected\n");
+				if(RobX%10<=2 || RobX%10>=8){
+					if(RobZ%10<=2 || RobZ%10>=8){
+						RobOrient+=90.0;
+					}
+					else{printf("Sorry, Not a valid street\n");}
+				}
+				else{printf("Sorry, Not a valid street\n");}
+				if(RobOrient >= 360){
+					RobOrient -= 360;
+				}
 			break;
 			default:
 				printf("UNDEFINED KEY\n");
