@@ -16,19 +16,28 @@ int Window_Height = 400;
 
 int boolpause = 0; //C does not support bool apparently (0=false, !0=true)
 
+// camera controls relative to the origin (world)
 int deltaX=0;
 int deltaY=0; 
 int deltaZ=0;
 
+// camera control storage variables relative to the robot (local archive)
 int alphaX=-5;
 int alphaY=5;
 int alphaZ=0;
+
+// view port camera controls (local working)
+int betaX=-5;
+int betaY=5;
+int betaZ=0;
+
+int view = 0;
 
 //Robot Global Variables
 int RobX=0.0;
 int RobY=0.0;
 int RobZ=0.0;
-float RobOrient=0.0;
+int RobOrient=0;
 float antDeg=0.0;
 float antSpeed=0.1; //30 degrees made it look like a strobe
 float headDeg=0.0;
@@ -48,13 +57,74 @@ void display(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glLoadIdentity();
 
+		if(view!=0){
+			switch(RobOrient){
+				case 0:
+					betaX=alphaX;
+					betaY=alphaY;
+					betaZ=alphaZ;
+				break;
+				case 90:
+					if(view == 2 || view == 4){
+						betaX=alphaX;
+						betaY=alphaY;
+						betaZ=-alphaZ;
+					}
+					else{
+						betaX=-alphaX;
+						betaY=alphaY;
+						betaZ=alphaZ;
+					}
+				break;
+				case 180:
+					betaX=-alphaX;
+					betaY=alphaY;
+					betaZ=-alphaZ;
+				break;
+				case 270:
+					if(view == 2 || view == 4){
+						betaX=-alphaX;
+						betaY=alphaY;
+						betaZ=alphaZ;
+					}
+					else{
+						betaX=alphaX;
+						betaY=alphaY;
+						betaZ=-alphaZ;
+					}
+			}
+		}
+		else{
+			switch(RobOrient){
+				case 0:
+					betaX=alphaX;
+					betaY=alphaY;
+					betaZ=alphaZ;
+				break;
+				case 90:
+					betaX=alphaZ;
+					betaY=alphaY;
+					betaZ=alphaX;
+				break;
+				case 180:
+					betaX=-alphaX;
+					betaY=alphaY;
+					betaZ=-alphaZ;
+				break;
+				case 270:
+					betaX=-alphaZ;
+					betaY=alphaY;
+					betaZ=-alphaX;
+			}
+					
+		}
 		if(RobX > 100){ RobX =98; deltaX=98; printf("ERROR CAUGHT (BoundX100)\n");}
 		if(RobX < 0)  { RobX = 2; deltaX=2 ; printf("ERROR CAUGHT (BoundX0)\n");}
 		if(RobZ > 100){ RobZ =98; deltaZ=98; printf("ERROR CAUGHT (BoundZ100)\n");}
 		if(RobZ < 0)  { RobZ = 2; deltaZ=2 ; printf("ERROR CAUGHT (BoundZ0)\n");}
 	
 	
-		gluLookAt(alphaX+deltaX,alphaY+deltaY,alphaZ+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
 	
 	
 		//Draw ground
@@ -125,20 +195,20 @@ void display(void)
 			glNormal3f( 0.0f, 0.0f, 1.0f);		// Normal Facing Forward
 			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -2.5f,  0.5f);	// Bottom Left Of The Texture and Quad
 			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -2.5f,  0.5f);	// Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.8f,  0.5f);	// Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.8f,  0.5f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.5f,  0.5f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.5f,  0.5f);	// Top Left Of The Texture and Quad
 			// Back Face
 			glNormal3f( 0.0f, 0.0f,-1.0f);		// Normal Facing Away
 			glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.5f, -2.5f, -0.5f);	// Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f, -0.8f, -0.5f);	// Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.5f, -0.8f, -0.5f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f, -0.5f, -0.5f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.5f, -0.5f, -0.5f);	// Top Left Of The Texture and Quad
 			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.5f, -2.5f, -0.5f);	// Bottom Left Of The Texture and Quad
 			// Top Face
 			glNormal3f( 0.0f, 1.0f, 0.0f);		// Normal Facing Up
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.8f, -0.5f);	// Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.8f,  0.5f);	// Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.8f,  0.5f);	// Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.8f, -0.5f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.5f, -0.5f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f,  0.5f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -0.5f,  0.5f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.5f, -0.5f);	// Top Right Of The Texture and Quad
 			// Bottom Face
 			glNormal3f( 0.0f,-1.0f, 0.0f);		// Normal Facing Down
 			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f, -2.5f, -0.5f);	// Top Right Of The Texture and Quad
@@ -148,16 +218,68 @@ void display(void)
 			// Right face
 			glNormal3f( 1.0f, 0.0f, 0.0f);		// Normal Facing Right
 			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f, -2.5f, -0.5f);	// Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.8f, -0.5f);	// Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.5f, -0.8f,  0.5f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f, -0.5f, -0.5f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.5f, -0.5f,  0.5f);	// Top Left Of The Texture and Quad
 			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.5f, -2.5f,  0.5f);	// Bottom Left Of The Texture and Quad
 			// Left Face
 			glNormal3f(-1.0f, 0.0f, 0.0f);		// Normal Facing Left
 			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -2.5f, -0.5f);	// Bottom Left Of The Texture and Quad
 			glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.5f, -2.5f,  0.5f);	// Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f, -0.8f,  0.5f);	// Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.8f, -0.5f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f, -0.5f,  0.5f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.5f, -0.5f);	// Top Left Of The Texture and Quad
 		glEnd();					// Done Drawing Quads
+
+		// Draw Neck
+		//glTranslatef(0.0f,-1.0f,0.0f);
+		glBegin(GL_QUADS);			// Start Drawing Quads
+			// Front Face
+			glNormal3f( 0.0f, 0.0f, 1.0f);		// Normal Facing Forward
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.1f, -0.8f,  0.1f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.1f, -0.8f,  0.1f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.1f, 0.0f,  0.1f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.1f, 0.0f,  0.1f);	// Top Left Of The Texture and Quad
+			// Back Face
+			glNormal3f( 0.0f, 0.0f,-1.0f);		// Normal Facing Away
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.1f, -0.8f, -0.1f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.1f, 0.0f, -0.1f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.1f, 0.0f, -0.1f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.1f, -0.8f, -0.1f);	// Bottom Left Of The Texture and Quad
+			// Top Face
+			glNormal3f( 0.0f, 1.0f, 0.0f);		// Normal Facing Up
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.1f, 0.0f, -0.1f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.1f, 0.0f,  0.1f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.1f, 0.0f,  0.1f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.1f, 0.0f, -0.1f);	// Top Right Of The Texture and Quad
+			// Bottom Face
+			glNormal3f( 0.0f,-1.0f, 0.0f);		// Normal Facing Down
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.1f, -0.8f, -0.1f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.1f, -0.8f, -0.1f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.1f, -0.8f,  0.1f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.1f, -0.8f,  0.1f);	// Bottom Right Of The Texture and Quad
+			// Right face
+			glNormal3f( 1.0f, 0.0f, 0.0f);		// Normal Facing Right
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.1f, -0.8f, -0.1f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.1f, 0.0f, -0.1f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.1f, 0.0f,  0.1f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.1f, -0.8f,  0.1f);	// Bottom Left Of The Texture and Quad
+			// Left Face
+			glNormal3f(-1.0f, 0.0f, 0.0f);		// Normal Facing Left
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.1f, -0.8f, -0.1f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.1f, -0.8f,  0.1f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.1f, 0.0f,  0.1f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.1f, 0.0f, -0.1f);	// Top Left Of The Texture and Quad
+		glEnd();					// Done Drawing Quads
+		
+		glColor4f(1.0f,0.0f,0.0f,0.0f); //Red
+		// Draw Box on Front
+		glBegin(GL_QUADS);
+			glNormal3f( 1.0f, 0.0f, 0.0f);		// Normal Facing Right
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.51f, -2.0f, -0.52f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.51f, -1.0f, -0.52f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.51f, -1.0f,  0.52f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.51f, -2.0f,  0.52f);	// Bottom Left Of The Texture and Quad
+			// Back Face
+		glEnd();
 		//Done Draw Robot
 
 		//turn the matrix back
@@ -264,30 +386,35 @@ int keyPressControl(unsigned char key, int x, int y)
 				alphaX=-5;
 				alphaY=5;
 				alphaZ=0;
+				view = 0;
 			break;
 			case GLUT_KEY_F5:
 				printf("KEY: F5 press detected\n");
 				alphaX=-5;
 				alphaY=10;
 				alphaZ=-5;
+				view = 1;
 			break;
 			case GLUT_KEY_F6:
 				printf("KEY: F6 press detected\n");
 				alphaX=-5;
 				alphaY=10;
 				alphaZ=5;
+				view = 2;
 			break;
 			case GLUT_KEY_F7:
 				printf("KEY: F7 press detected\n");
 				alphaX=5;
 				alphaY=10;
 				alphaZ=5;
+				view = 3;
 			break;
 			case GLUT_KEY_F8:
 				printf("KEY: F8 press detected\n");
-				alphaX=-5;
+				alphaX=5;
 				alphaY=10;
-				alphaZ=5;
+				alphaZ=-5;
+				view = 4;
 			break;
 		
 		}
@@ -373,7 +500,6 @@ void pressKey(unsigned char key, int x, int y)
 				deltaY=0; 
 				deltaZ=0;
 
-				//Robot Global Variables
 				RobX=0.0;
 				RobY=0.0;
 				RobZ=0.0;
@@ -448,3 +574,4 @@ int main(int argc, char **argv)
 	glutMainLoop();
 	return 1;
 }
+

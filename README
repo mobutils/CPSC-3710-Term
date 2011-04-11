@@ -18,14 +18,18 @@ z - Asks the robot to drive forward, we have given him explicit
     instructions not to go off the grid so he will jump back if you try
     and make him go off it.
 
-F1 - Not Complete
-F2 - Not Complete
-F3 - Not Complete
-F4 - Not implemented
-F5 - Not Implemented
-F6 - Not Implemented
-F7 - Not Implemented
-F8 - Not Implemented
+r - Resets the robot to the initial position and stance. if you wish you
+    may also press F4 after to return to the initial view as well as only
+    the robot is reset not the world or the view
+
+F1 - Resets the robots head to the forward position
+F2 - Turns the robot head up to 45 degrees to the left by 1 degree increments
+F3 - Turns the robot head up to 45 degrees to the right by 1 degree increments
+F4 - Sets the view to a rear or 3rd person view from behind
+F5 - Birds eye view from the back left
+F6 - Birds eye view from the back right
+F7 - Birds eye view from the front left
+F8 - Birds eye view from the front right
 
 ---------------[Design Summary]--------------------
 
