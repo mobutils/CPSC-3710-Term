@@ -14,12 +14,20 @@ int Window_ID;
 int Window_Width = 600;
 int Window_Height = 400;
 
+
+//camera positon offset
 int deltaX=0;
 int deltaY=0; 
 int deltaZ=0;
 
+//lookat offset
+int eyeDeltaX=0;
+int eyeDeltaY=0;
+int eyeDeltaZ=0;
+
+
 GLfloat lightDiffuse[] = {.9, .9, .9, 5.0};
-GLfloat lightPosition[] = {10.0, 50.0, 10.0, 0.5};  /* Infinite light location. */
+GLfloat lightPosition[] = {10.0, 50.0, 10.0, 0.5};  //Infinite light location.
 
 void display(void)
 {
@@ -28,36 +36,47 @@ void display(void)
 	glLoadIdentity();
 	
 	
-	gluLookAt(10.0+deltaX,2.5+deltaY,10.0+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+	gluLookAt(10.0+deltaX,2.5+deltaY,10.0+deltaZ,0.0+deltaX+eyeDeltaX,2.5,0.0+deltaZ, 0.0,1.0,0.0);
 	
 	
 	//Draw ground
 	glBegin(GL_QUADS);
 		glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 		glVertex3f(0.0f, 0.0f, 0.0f);
-				glColor4f(0.0f,0.0f,1.0f,0.0f); //B
+		glColor4f(0.0f,0.0f,1.0f,0.0f); //B
 		glVertex3f(0.0f, 0.0f, 100.0f);
-				glColor4f(1.0f,0.0f,0.0f,0.0f); //Green
+		glColor4f(1.0f,0.0f,0.0f,0.0f); //Green
 		glVertex3f(100.0f,0.0f,100.0f);
-				glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
+		glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 		glVertex3f(100.0f,0.0f,0.0f);
 	glEnd();
 	
 	//Start drawing buildings from origin
 	glTranslatef(5.0f,2.5f,5.0f);
 	
+	
+	glColor4f(1.0f,1.0f,1.0f,0.5f);
+	
+	
 	int j;
-	for(j=0; j < 10; j++)
+	for(j=0; j < 12; j++)
 	{
 		if(j != 0)
-			glTranslatef(-100.f,0.0f,10.0f);
-	
-		int i;
-		for(i=0; i < 10; i++)
 		{
-			glColor4f(1.0f,1.0f,1.0f,0.5f);
+			if(j%2 == 0)
+				glTranslatef(-96.0f,0.0f,10.0f);
+			else
+				glTranslatef(-96.0f,0.0f,6.0f);
+		}
+		
+		int i;
+		for(i=0; i < 12; i++)
+		{
 			glutSolidCube(5.0f);
-			glTranslatef(10.0f,0.0f,0.0f);
+			if(i%2 == 0)
+				glTranslatef(6.0f,0.0f,0.0f);
+			else
+				glTranslatef(10.0f,0.0f,0.0f);			
 		}	
 	}
 	//Draw Buildings
@@ -65,7 +84,7 @@ void display(void)
 	
 	
 	glutSwapBuffers();
-	
+		
 	
 }
 
@@ -107,7 +126,22 @@ void init(int width, int height)
 
 }
 
-int keyPressControl(unsigned char key, int x, int y)
+void keyPressAscii(unsigned char key, int x, int y)
+{
+	switch(key)
+	{
+		case 'z':
+			printf("KEY: Z press detected");
+			eyeDeltaX++;
+		break;
+		case 'x':
+			printf("KEY: X press detected");
+			eyeDeltaX--;
+		break;
+	}
+}
+
+void keyPressControl(unsigned char key, int x, int y)
 {
 	switch(key)
 	{
@@ -144,6 +178,7 @@ int main(int argc, char **argv)
 	glutDisplayFunc(&display);
 	glutIdleFunc(&display);
 	glutSpecialFunc(&keyPressControl);
+	glutKeyboardFunc(&keyPressAscii);
 	glutReshapeFunc(&resize);
 	
 	init(Window_Width, Window_Height);
