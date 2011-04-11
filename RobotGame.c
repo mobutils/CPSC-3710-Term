@@ -20,6 +20,10 @@ int deltaX=0;
 int deltaY=0; 
 int deltaZ=0;
 
+int alphaX=-5;
+int alphaY=5;
+int alphaZ=0;
+
 //Robot Global Variables
 int RobX=0.0;
 int RobY=0.0;
@@ -50,7 +54,7 @@ void display(void)
 		if(RobZ < 0)  { RobZ = 2; deltaZ=2 ; printf("ERROR CAUGHT (BoundZ0)\n");}
 	
 	
-		gluLookAt(5.0+deltaX,5.0+deltaY,0.0+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+		gluLookAt(alphaX+deltaX,alphaY+deltaY,alphaZ+deltaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
 	
 	
 		//Draw ground
@@ -102,9 +106,9 @@ void display(void)
 	
 		//draw head
 		glColor4f(1.0f,1.0f,0.0f,0.0f); //Yellow
-		glRotatef(headDeg,1.0f,0.0f,1.0f);
+		glRotatef(headDeg,0.0f,1.0f,0.0f);
 		glutSolidCube(0.5f);
-		glRotatef(-headDeg,0.0f,0.0f,1.0f);
+		glRotatef(-headDeg,0.0f,1.0f,0.0f);
 
 		//draw antenae //sp?	
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
@@ -239,21 +243,51 @@ int keyPressControl(unsigned char key, int x, int y)
 			break;	
 			case GLUT_KEY_F1:
 				printf("KEY: F1 press detected\n");
-				RobOrient=0.0;
+				headDeg=0.0;
 			break;	
 			case GLUT_KEY_F2:
 				printf("KEY: F2 press detected\n");
 				if(headDeg >= -45.0){
-					RobOrient -= 1.00;
+					headDeg -= 1.00;
 				}
 				else{printf("sorry the robot can only turn its head so far... press F1 or F3");}
 			break;	
 			case GLUT_KEY_F3:
 				printf("KEY: F3 press detected\n");
 				if(headDeg <= 45){
-					RobOrient += 1.0;
+					headDeg += 1.0;
 				}
 				else{printf("sorry the robot can only turn its head so far... press F1 or F2");}
+			break;
+			case GLUT_KEY_F4:
+				printf("KEY: F4 press detected\n");
+				alphaX=-5;
+				alphaY=5;
+				alphaZ=0;
+			break;
+			case GLUT_KEY_F5:
+				printf("KEY: F5 press detected\n");
+				alphaX=-5;
+				alphaY=10;
+				alphaZ=-5;
+			break;
+			case GLUT_KEY_F6:
+				printf("KEY: F6 press detected\n");
+				alphaX=-5;
+				alphaY=10;
+				alphaZ=5;
+			break;
+			case GLUT_KEY_F7:
+				printf("KEY: F7 press detected\n");
+				alphaX=5;
+				alphaY=10;
+				alphaZ=5;
+			break;
+			case GLUT_KEY_F8:
+				printf("KEY: F8 press detected\n");
+				alphaX=-5;
+				alphaY=10;
+				alphaZ=5;
 			break;
 		
 		}
