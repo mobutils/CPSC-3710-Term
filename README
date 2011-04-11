@@ -18,6 +18,15 @@ z - Asks the robot to drive forward, we have given him explicit
     instructions not to go off the grid so he will jump back if you try
     and make him go off it.
 
+F1 - Not Complete
+F2 - Not Complete
+F3 - Not Complete
+F4 - Not implemented
+F5 - Not Implemented
+F6 - Not Implemented
+F7 - Not Implemented
+F8 - Not Implemented
+
 ---------------[Design Summary]--------------------
 
 
