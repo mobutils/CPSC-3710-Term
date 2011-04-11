@@ -57,9 +57,9 @@ void display(void)
 		glBegin(GL_QUADS);
 			glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 			glVertex3f(0.0f, 0.0f, 0.0f);
-					glColor4f(0.0f,0.0f,1.0f,0.0f); //B
+					glColor4f(0.0f,1.0f,0.0f,0.0f); //B
 			glVertex3f(0.0f, 0.0f, 100.0f);
-					glColor4f(1.0f,0.0f,0.0f,0.0f); //Green
+					glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 			glVertex3f(100.0f,0.0f,100.0f);
 					glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 			glVertex3f(100.0f,0.0f,0.0f);
@@ -101,9 +101,10 @@ void display(void)
 		glRotatef(RobOrient,0.0f,1.0f,0.0f);
 	
 		//draw head
-		glRotatef(headDeg,0.0f,0.0f,0.0f);
+		glColor4f(1.0f,1.0f,0.0f,0.0f); //Yellow
+		glRotatef(headDeg,1.0f,0.0f,1.0f);
 		glutSolidCube(0.5f);
-		glRotatef(-headDeg,0.0f,0.0f,0.0f);
+		glRotatef(-headDeg,0.0f,0.0f,1.0f);
 
 		//draw antenae //sp?	
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
@@ -202,6 +203,8 @@ void init(int width, int height)
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_COLOR_MATERIAL);
 	
 	glEnable(GL_DEPTH_TEST);
 
