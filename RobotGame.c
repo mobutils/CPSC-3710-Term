@@ -284,7 +284,7 @@ void display(void)
 			// Back Face
 		glEnd();
 
-		// Draw Triangles
+		// Draw Triangles on back
 		glColor4f(0.0f,0.0f,1.0f,0.0f); //BLUE
 		glBegin(GL_TRIANGLES);
 			glTexCoord2f(1.0f, 0.0f); glVertex3f( -0.51f, -1.5f, -0.35f);	// Bottom Right Of The Texture and Quad
@@ -363,6 +363,7 @@ int keyPressControl(unsigned char key, int x, int y)
 
 		switch(key)
 		{
+/*			//DEBUG use only
 			case GLUT_KEY_UP:
 				printf ("KEY: UP press detected\n");
 				deltaX--;
@@ -383,7 +384,7 @@ int keyPressControl(unsigned char key, int x, int y)
 				deltaZ++;
 				RobZ+=1.0;
 				//printf ("Robz = %f \n",RobZ);
-			break;	
+			break;*/	
 			case GLUT_KEY_F1:
 				printf("KEY: F1 press detected\n");
 				headDeg=0.0;
