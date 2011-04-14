@@ -104,7 +104,7 @@ void display(void)
 				case 90:
 					betaX=alphaZ;
 					betaY=alphaY;
-					betaZ=alphaX;
+					betaZ=alphaX;printf("X: %i Y: %i Z: %i \n",RobX,RobY,RobZ);
 				break;
 				case 180:
 					betaX=-alphaX;
@@ -131,11 +131,11 @@ void display(void)
 		glBegin(GL_QUADS);
 			glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 			glVertex3f(0.0f, 0.0f, 0.0f);
-					glColor4f(0.0f,1.0f,0.0f,0.0f); //B
+					//glColor4f(0.0f,1.0f,0.0f,0.0f); //B
 			glVertex3f(0.0f, 0.0f, 100.0f);
-					glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
+					//glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 			glVertex3f(100.0f,0.0f,100.0f);
-					glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
+					//glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
 			glVertex3f(100.0f,0.0f,0.0f);
 		glEnd();
 	
@@ -170,22 +170,24 @@ void display(void)
 	
 		//move to robot position
 		glTranslatef(RobX,RobY,RobZ);
+		// DEBUG: uncomment to verify robot position in global space
+		printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
 
 		//turn the whole robot
-		glRotatef(RobOrient,0.0f,1.0f,0.0f);
+		glRotatef(-RobOrient,0.0f,1.0f,0.0f);
 	
 		//draw head
 		glColor4f(1.0f,1.0f,0.0f,0.0f); //Yellow
-		glRotatef(headDeg,0.0f,1.0f,0.0f);
-		glutSolidCube(0.5f);
 		glRotatef(-headDeg,0.0f,1.0f,0.0f);
+		glutSolidCube(0.5f);
+		glRotatef(headDeg,0.0f,1.0f,0.0f);
 
 		//draw antenae //sp?	
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
 		antDeg+=antSpeed;
-		glRotatef(antDeg,0.0f,0.0f,1.0f);
-		gluCylinder(quadratic,0.1f,0.1f,0.5f,8,8);
 		glRotatef(-antDeg,0.0f,0.0f,1.0f);
+		gluCylinder(quadratic,0.1f,0.1f,0.5f,8,8);
+		glRotatef(antDeg,0.0f,0.0f,1.0f);
 		glRotatef(90.0f,1.0f,0.0f,0.0f);
 
 		//Draw Body
@@ -271,19 +273,38 @@ void display(void)
 		glEnd();					// Done Drawing Quads
 		
 		glColor4f(1.0f,0.0f,0.0f,0.0f); //Red
+		
 		// Draw Box on Front
 		glBegin(GL_QUADS);
 			glNormal3f( 1.0f, 0.0f, 0.0f);		// Normal Facing Right
-			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.51f, -2.0f, -0.52f);	// Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.51f, -1.0f, -0.52f);	// Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.51f, -1.0f,  0.52f);	// Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.51f, -2.0f,  0.52f);	// Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.51f, -2.0f, -0.35f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.51f, -1.0f, -0.35f);	// Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.51f, -1.0f,  0.35f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.51f, -2.0f,  0.35f);	// Bottom Left Of The Texture and Quad
+			// Back Face
+		glEnd();
+
+		// Draw Triangles
+		glColor4f(0.0f,0.0f,1.0f,0.0f); //BLUE
+		glBegin(GL_TRIANGLES);
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( -0.51f, -1.5f, -0.35f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( -0.51f, -1.0f, 0.0f);	// Top Right Of The Texture and Quad
+			//glTexCoord2f(0.0f, 1.0f); glVertex3f( -0.51f, -1.0f,  0.35f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -0.51f, -1.5f,  0.35f);	// Bottom Left Of The Texture and Quad
+			// Back Face
+		glEnd();
+
+		glBegin(GL_TRIANGLES);
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( -0.51f, -2.0f, -0.35f);	// Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( -0.51f, -1.5f, 0.0f);	// Top Right Of The Texture and Quad
+			//glTexCoord2f(0.0f, 1.0f); glVertex3f( -0.51f, -0.0f,  0.35f);	// Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -0.51f, -2.0f,  0.35f);	// Bottom Left Of The Texture and Quad
 			// Back Face
 		glEnd();
 		//Done Draw Robot
 
 		//turn the matrix back
-		glRotatef(-RobOrient,0.0f,1.0f,0.0f);
+		glRotatef(RobOrient,0.0f,1.0f,0.0f);
 	//**************************************************************<  END ROBOT
 	
 		glutSwapBuffers();
