@@ -22,8 +22,8 @@ int deltaY=0;
 int deltaZ=0;
 
 // camera control storage variables relative to the robot (local archive)
-int alphaX=-5;
-int alphaY=5;
+int alphaX=-7;
+int alphaY=7;
 int alphaZ=0;
 
 // view port camera controls (local working)
@@ -42,7 +42,10 @@ float antDeg=0.0;
 float antSpeed=0.1; //30 degrees made it look like a strobe
 float headDeg=0.0;
 
-//bool paused;
+#define BUILDINGS 10
+
+//Building Map
+int Building_Map[BUILDINGS*BUILDINGS];
 
 //Ligthing
 GLfloat lightDiffuse[] = {.9, .9, .9, 5.0};
@@ -51,13 +54,20 @@ GLfloat lightPosition[] = {10.0, 50.0, 10.0, 0.5};  /* Infinite light location. 
 GLUquadricObj *quadratic;
 GLuint texture[5];
 
-void display(void)
+void initMap()
 {
-	if(boolpause==0){
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glLoadIdentity();
+	int i, count;
+	
+	count = BUILDINGS * BUILDINGS;
+	for(i=0; i < count; i++)
+	{	
+			Building_Map[i] = 1;	
+	}
+}
 
-		if(view!=0){
+void robotOrientation()
+{
+if(view!=0){
 			switch(RobOrient){
 				case 0:
 					betaX=alphaX;
@@ -104,7 +114,7 @@ void display(void)
 				case 90:
 					betaX=alphaZ;
 					betaY=alphaY;
-					betaZ=alphaX;printf("X: %i Y: %i Z: %i \n",RobX,RobY,RobZ);
+					betaZ=alphaX;//printf("X: %i Y: %i Z: %i \n",RobX,RobY,RobZ);
 				break;
 				case 180:
 					betaX=-alphaX;
@@ -122,44 +132,68 @@ void display(void)
 		if(RobX < 0)  { RobX = 2; deltaX=2 ; printf("ERROR CAUGHT (BoundX0)\n");}
 		if(RobZ > 100){ RobZ =98; deltaZ=98; printf("ERROR CAUGHT (BoundZ100)\n");}
 		if(RobZ < 0)  { RobZ = 2; deltaZ=2 ; printf("ERROR CAUGHT (BoundZ0)\n");}
-	
-	
-		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
-	
-	
-		//Draw ground
-		glBegin(GL_QUADS);
-			glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
-			glVertex3f(0.0f, 0.0f, 0.0f);
-					//glColor4f(0.0f,1.0f,0.0f,0.0f); //B
-			glVertex3f(0.0f, 0.0f, 100.0f);
-					//glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
-			glVertex3f(100.0f,0.0f,100.0f);
-					//glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
-			glVertex3f(100.0f,0.0f,0.0f);
-		glEnd();
-	
+}
+
+
+void drawBuildings(GLenum mode)
+{
 		//Start drawing buildings from origin
 		glTranslatef(5.0f,2.5f,5.0f);
 	
+		int count = 1;
 		int j;
-		for(j=0; j < 10; j++)
+		for(j=0; j < BUILDINGS; j++)
 		{
 			if(j != 0)
 				glTranslatef(-100.f,0.0f,10.0f);
 	
 			int i;
-			for(i=0; i < 10; i++)
+			int index;
+			for(i=0; i < BUILDINGS; i++)
 			{
+				if(mode == GL_SELECT)
+				{
+					glLoadName(count);
+					//printf("Loading Object Name: %i", count);
+				}
+				
+				index = (BUILDINGS*j) + i;
+				
 				glColor4f(1.0f,1.0f,1.0f,0.5f);
-				glutSolidCube(5.0f);
+				//If previously shot don't draw
+				if(Building_Map[index]==1)
+					glutSolidCube(5.0f);
+					
 				glTranslatef(10.0f,0.0f,0.0f);
+				count++;
 			}	
 		}
 		//reset position
 		glTranslatef(-105.0f,0.0f,-95.0f);
+}
+
+void display(void)
+{
+	if(boolpause==0){
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
+
+		robotOrientation();
+		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+	
+	
+		//Draw ground
+		glBegin(GL_QUADS);
+			glColor4f(0.0f,1.0f,0.0f,0.0f); //Red corner
+			glVertex3f(0.0f, 0.0f, 0.0f);
+			glVertex3f(0.0f, 0.0f, 100.0f);
+			glVertex3f(100.0f,0.0f,100.0f);
+			glVertex3f(100.0f,0.0f,0.0f);
+		glEnd();
+	
 	
 		//Draw Buildings
+		drawBuildings(GL_RENDER);
 	
 	//*******************************************************************<  START ROBOT
 
@@ -170,8 +204,10 @@ void display(void)
 	
 		//move to robot position
 		glTranslatef(RobX,RobY,RobZ);
+		
+		
 		// DEBUG: uncomment to verify robot position in global space
-		printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
+		//printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
 
 		//turn the whole robot
 		glRotatef(-RobOrient,0.0f,1.0f,0.0f);
@@ -180,9 +216,20 @@ void display(void)
 		glColor4f(1.0f,1.0f,0.0f,0.0f); //Yellow
 		glRotatef(-headDeg,0.0f,1.0f,0.0f);
 		glutSolidCube(0.5f);
+		glRotatef(90.0,0.0,1.0,0.0);
+		glTranslatef(0.125f,0.0f,0.251f);
+		glColor4f(1.0,1.0,1.0,0.0);
+		gluCylinder(quadratic,0.1f,0.0f,0.1f,8,8);
+		//glTranslate(0.15,0.0,0.0);
+		glTranslatef(-0.125f,0.0f,-0.251f);
+		glRotatef(-90.0,0.0,1.0,0.0);
 		glRotatef(headDeg,0.0f,1.0f,0.0f);
-
+		
+		glColor4f(1.0f,1.0f,0.0f,0.0f); //Yellow
 		//draw antenae //sp?	
+		//glTranslatef(0.0,0.0,0.5);
+		//gluCylinder(quadratic,0.2f,0.0f,0.5f,8,8);
+		//glTranslatef(0.0,0.0,0.5);
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
 		antDeg+=antSpeed;
 		glRotatef(-antDeg,0.0f,0.0f,1.0f);
@@ -312,25 +359,10 @@ void display(void)
 	}
 }
 
-void resize(int width, int height)
-{
-	//Prevent divide by zero errors
-	if(height <= 0)
-		height = 1;
-		
-	glViewport(0,0, (GLsizei)width, (GLsizei)height);
-	
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	
-	gluPerspective(60.0f,(float)width/(float)height,1.0f,100.0f);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	Window_Width = width;
-	Window_Height = height;
-}
+
+
+
+
 
 void init(int width, int height)
 {
@@ -357,34 +389,13 @@ void init(int width, int height)
 
 }
 
-int keyPressControl(unsigned char key, int x, int y)
+void keyPressControl(int key, int x, int y)
 {
 	if(boolpause == 0){
 
 		switch(key)
 		{
-/*			//DEBUG use only
-			case GLUT_KEY_UP:
-				printf ("KEY: UP press detected\n");
-				deltaX--;
-				RobX-=1.0;
-			break;
-			case GLUT_KEY_DOWN:
-				printf ("KEY: DOWN press detected\n");
-				deltaX++;
-				RobX+=1.0;
-			break;
-			case GLUT_KEY_RIGHT:
-				printf ("KEY: RIGHT press detected\n");
-				deltaZ--;
-				RobZ-=1.0;
-			break;
-			case GLUT_KEY_LEFT:
-				printf ("KEY: LEFT press detected\n");
-				deltaZ++;
-				RobZ+=1.0;
-				//printf ("Robz = %f \n",RobZ);
-			break;*/	
+		
 			case GLUT_KEY_F1:
 				printf("KEY: F1 press detected\n");
 				headDeg=0.0;
@@ -521,6 +532,8 @@ void pressKey(unsigned char key, int x, int y)
 				deltaX=0;
 				deltaY=0; 
 				deltaZ=0;
+				
+				initMap();
 
 				RobX=0.0;
 				RobY=0.0;
@@ -531,8 +544,8 @@ void pressKey(unsigned char key, int x, int y)
 			break;
 			case 'q':
 				printf("KEY: a press detected\n");
-				if(RobX%10<=2 || RobX%10>=8){
-					if(RobZ%10<=2 || RobZ%10>=8){
+				if(RobX%BUILDINGS<=2 || RobX%BUILDINGS>=8){
+					if(RobZ%BUILDINGS<=2 || RobZ%BUILDINGS>=8){
 						RobOrient-=90.0;
 					}
 					else{printf("Sorry, Not a valid street\n");}
@@ -544,8 +557,8 @@ void pressKey(unsigned char key, int x, int y)
 			break;	
 			case 'a':
 				printf("KEY: a press detected\n");
-				if(RobX%10<=2 || RobX%10>=8){
-					if(RobZ%10<=2 || RobZ%10>=8){
+				if(RobX%BUILDINGS<=2 || RobX%BUILDINGS>=8){
+					if(RobZ%BUILDINGS<=2 || RobZ%BUILDINGS>=8){
 						RobOrient+=90.0;
 					}
 					else{printf("Sorry, Not a valid street\n");}
@@ -574,6 +587,100 @@ void pressKey(unsigned char key, int x, int y)
 	}
 } 
 
+void processHits(GLint hits, GLuint buffer[])
+{
+   GLint names, *ptr;
+
+   printf ("hits = %d\n", hits);
+   ptr = (GLint *) buffer; 
+   /*for (i = 0; i < hits; i++) {	
+      
+
+      for (j = 0; j < names; j++) {
+         printf("NAME: %i Array ID: %i",*ptr, *ptr-1);
+         //Remove building from map */	   
+         
+         ptr+=3;
+        names = *ptr;
+        Building_Map[*ptr-1] = 0;
+         
+         printf("Name: %i, ArrayID: %i" , *ptr, *ptr-1);
+         ptr++;
+     	
+     	
+}
+
+void resize(int width, int height)
+{
+	//Prevent divide by zero errors
+	if(height <= 0)
+		height = 1;
+		
+	glViewport(0,0, (GLsizei)width, (GLsizei)height);
+	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	gluPerspective(60.0f,(float)width/(float)height,1.0f,100.0f);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	Window_Width = width;
+	Window_Height = height;
+}
+
+#define SIZE 512
+void mouse(int button, int state, int x, int y)
+{
+	GLuint selectBuf[SIZE];
+	GLint hits;
+	GLint viewport[4];
+	
+	if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		glGetIntegerv (GL_VIEWPORT, viewport);
+		glSelectBuffer(SIZE, selectBuf);
+		
+		glRenderMode(GL_SELECT);
+		glInitNames();
+		glPushName(0);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		
+		gluPickMatrix((GLdouble)x, (GLdouble)(viewport[3]-y), 5.0,5.0,viewport);
+		
+		gluPerspective(60.0f,(float)Window_Width/(float)Window_Height,1.0f,100.0f);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		
+		robotOrientation();
+		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+		
+		drawBuildings(GL_SELECT);
+		
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glFlush();
+		
+		glMatrixMode(GL_MODELVIEW);
+		
+		hits = glRenderMode(GL_RENDER);
+		
+		processHits(hits, selectBuf);
+		
+		//printf("Left Button Press Detected! X: %i Y: %i \n", x, y);
+		
+		glutPostRedisplay();
+		
+		
+	}
+}
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -589,11 +696,15 @@ int main(int argc, char **argv)
 	glutSpecialFunc(&keyPressControl);
 	glutKeyboardFunc(&pressKey);
 	glutReshapeFunc(&resize);
+	glutMouseFunc(&mouse);
 	
 	init(Window_Width, Window_Height);
+	
+	initMap();
 	
 	init(Window_Width,Window_Height);
 	glutMainLoop();
 	return 1;
 }
+
 
