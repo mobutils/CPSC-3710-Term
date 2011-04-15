@@ -188,7 +188,7 @@ void drawRobot()
 		glTranslatef(RobX,RobY,RobZ);
 
 		// DEBUG: uncomment to verify robot position in global space
-		printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
+		//printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
 
 
 		//turn the whole robot
@@ -198,8 +198,18 @@ void drawRobot()
 		glColor4f(1.0f,1.0f,0.0f,0.0f); //Yellow
 		glRotatef(-headDeg,0.0f,1.0f,0.0f);
 		glutSolidCube(0.5f);
+
+		glColor4f(0.0f,1.0f,1.0f,0.0f);
+		glRotatef(90.0,0.0,1.0,0.0);
+		glTranslatef(-0.125,0.0,0.251);
+		gluCylinder(quadratic,0.1f,0.0f,0.01f,5,5);
+		glTranslatef(0.25,0.0,0.0);
+		gluCylinder(quadratic,0.1f,0.0f,0.01f,5,5);
+		glTranslatef(-0.125,0.0,-0.251);
+		glRotatef(-90.0,0.0,1.0,0.0);
 		glRotatef(headDeg,0.0f,1.0f,0.0f);
 
+		glColor4f(1.0f,1.0f,0.0f,0.0f);
 		//draw antenae //sp?	
 		//glTranslatef(0.0,0.0,0.5);
 		//gluCylinder(quadratic,0.2f,0.0f,0.5f,8,8);
@@ -207,7 +217,7 @@ void drawRobot()
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
 		antDeg+=antSpeed;
 		glRotatef(-antDeg,0.0f,0.0f,1.0f);
-		gluCylinder(quadratic,0.1f,0.1f,0.5f,8,8);
+		gluCylinder(quadratic,0.1f,0.1f,0.5f,5,5);
 		glRotatef(antDeg,0.0f,0.0f,1.0f);
 		glRotatef(90.0f,1.0f,0.0f,0.0f);
 
@@ -405,22 +415,22 @@ void keyPressControl(int key, int x, int y)
 			break;	
 			case GLUT_KEY_F2:
 				printf("KEY: F2 press detected\n");
-				if(headDeg >= -45.0){
+				if(headDeg >= -180.0){
 					headDeg -= 1.00;
 				}
 				else{printf("sorry the robot can only turn its head so far... press F1 or F3");}
 			break;	
 			case GLUT_KEY_F3:
 				printf("KEY: F3 press detected\n");
-				if(headDeg <= 45){
+				if(headDeg <= 180){
 					headDeg += 1.0;
 				}
 				else{printf("sorry the robot can only turn its head so far... press F1 or F2");}
 			break;
 			case GLUT_KEY_F4:
 				printf("KEY: F4 press detected\n");
-				alphaX=-5;
-				alphaY=5;
+				alphaX=-7;
+				alphaY=7;
 				alphaZ=0;
 				view = 0;
 			break;
@@ -539,7 +549,7 @@ void pressKey(unsigned char key, int x, int y)
 				initMap();
 
 				RobX=0.0;
-				RobY=0.0;
+
 				RobZ=0.0;
 				RobOrient=0.0;
 				antDeg=0.0;
@@ -547,8 +557,8 @@ void pressKey(unsigned char key, int x, int y)
 			break;
 			case 'q':
 				printf("KEY: a press detected\n");
-				if(RobX%BUILDINGS<=2 || RobX%BUILDINGS>=8){
-					if(RobZ%BUILDINGS<=2 || RobZ%BUILDINGS>=8){
+				if(RobX%10<=2 || RobX%10>=8){
+					if(RobZ%10<=2 || RobZ%10>=8){
 						RobOrient-=90.0;
 					}
 					else{printf("Sorry, Not a valid street\n");}
@@ -560,8 +570,8 @@ void pressKey(unsigned char key, int x, int y)
 			break;	
 			case 'a':
 				printf("KEY: a press detected\n");
-				if(RobX%BUILDINGS<=2 || RobX%BUILDINGS>=8){
-					if(RobZ%BUILDINGS<=2 || RobZ%BUILDINGS>=8){
+				if(RobX%10<=2 || RobX%10>=8){
+					if(RobZ%10<=2 || RobZ%10>=8){
 						RobOrient+=90.0;
 					}
 					else{printf("Sorry, Not a valid street\n");}
@@ -572,7 +582,7 @@ void pressKey(unsigned char key, int x, int y)
 				}
 			break;
 			default:
-				printf("UNDEFINED KEY\n");
+				printf("UNDEFINED KEY (make sure Caps Lock is off)\n");
 			break;
 		 }
 	}
