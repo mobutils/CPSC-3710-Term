@@ -23,7 +23,7 @@ int deltaZ=0;
 
 // camera control storage variables relative to the robot (local archive)
 int alphaX=-7;
-int alphaY=60;
+int alphaY=7;
 
 int alphaZ=0;
 
@@ -36,7 +36,7 @@ int view = 0;
 
 //Robot Global Variables
 int RobX=0.0;
-int RobY=0.0;
+int RobY=3.0;
 int RobZ=0.0;
 int RobOrient=0;
 float antDeg=0.0;
@@ -327,6 +327,8 @@ void drawRobot()
 		//turn the matrix back
 		glRotatef(RobOrient,0.0f,1.0f,0.0f);
 	//**************************************************************<  END ROBOT
+	
+	glTranslatef(-RobX,-RobY,-RobZ);
 }
 
 void display(void)
@@ -348,12 +350,12 @@ void display(void)
 			glVertex3f((float)(MaxDistance),0.0f,0.0f);
 		glEnd();
 	
-	
+		//Draw Robot
+		drawRobot();
 		//Draw Buildings
 		drawBuildings(GL_RENDER);
 	
-		//Draw Robot
-		drawRobot();
+
 	
 		glutSwapBuffers();
 	
