@@ -1,5 +1,5 @@
 INCLUDE = -I/usr/include/
-LIBDIR  = -L/usr/lib/
+LIBDIR = -L/usr/lib/
 
 COMPILERFLAGS = -Wall
 CC = gcc
