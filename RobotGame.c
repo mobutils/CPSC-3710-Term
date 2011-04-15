@@ -52,7 +52,7 @@ int Building_Map[BUILDINGS*BUILDINGS];
 
 //Ligthing
 GLfloat lightDiffuse[] = {.9, .9, .9, 5.0};
-GLfloat lightPosition[] = {0.0, 50.0, 0.0, 0.5};  /* Infinite light location. */
+GLfloat lightPosition[] = {100.0, 50.0, 100.0, 0.5};  /* Infinite light location. */
 
 GLUquadricObj *quadratic;
 GLuint texture[5];
@@ -387,8 +387,8 @@ void init(int width, int height)
 	gluQuadricTexture(quadratic, GL_TRUE);
 	
 	//Light Position set to centre
-	lightPosition[0] = (GLfloat)(MaxDistance/2);
-	lightPosition[2] = (GLfloat)(MaxDistance/2);
+	//lightPosition[0] = (GLfloat)(MaxDistance/2);
+	//lightPosition[2] = (GLfloat)(MaxDistance/2);
 	
 	//Set up the sun.
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
