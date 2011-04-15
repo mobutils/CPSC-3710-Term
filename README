@@ -1,0 +1,48 @@
+CPSC 3710 Term Projet
+James Pike, James Oliver
+
+------------------[Tutorial]-----------------------
+
+  => Compilation Instructions
+
+First ensure that you have both the files Makefile and RobotGame.c
+in the file you wish to use. now from in that file type 'make' and
+then execute ./Robot
+
+  => Controls
+
+a - Turn Right can only be performed at street intersections to prevent
+    the robot from blowing up upon impact with buildings.
+
+z - Asks the robot to drive forward, we have given him explicit 
+    instructions not to go off the grid so he will jump back if you try
+    and make him go off it.
+
+r - Resets the robot to the initial position and stance. if you wish you
+    may also press F4 after to return to the initial view as well as only
+    the robot is reset not the world or the view
+
+F1 - Resets the robots head to the forward position
+F2 - Turns the robot head up to 45 degrees to the left by 1 degree increments
+F3 - Turns the robot head up to 45 degrees to the right by 1 degree increments
+F4 - Sets the view to a rear or 3rd person view from behind
+F5 - Birds eye view from the back left
+F6 - Birds eye view from the back right
+F7 - Birds eye view from the front left
+F8 - Birds eye view from the front right
+
+---------------[Design Summary]--------------------
+
+
+---------------[Data Structures]-------------------
+
+
+---------------[OpenGL Learned]--------------------
+
+
+-----------------[assumptions]---------------------
+
+
+-------------[Other Documentation]-----------------
+
+
