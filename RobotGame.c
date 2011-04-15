@@ -24,6 +24,7 @@ int deltaZ=0;
 // camera control storage variables relative to the robot (local archive)
 int alphaX=-7;
 int alphaY=60;
+
 int alphaZ=0;
 
 // view port camera controls (local working)
@@ -175,6 +176,7 @@ void drawBuildings(GLenum mode)
 		glTranslatef(-(MaxDistance) - 5.0f,0.0f,-95.0f);
 }
 
+
 void drawRobot()
 {
 		//Start drawing Robot
@@ -184,9 +186,10 @@ void drawRobot()
 	
 		//move to robot position
 		glTranslatef(RobX,RobY,RobZ);
-		
+
 		// DEBUG: uncomment to verify robot position in global space
 		printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
+
 
 		//turn the whole robot
 		glRotatef(-RobOrient,0.0f,1.0f,0.0f);
@@ -198,6 +201,9 @@ void drawRobot()
 		glRotatef(headDeg,0.0f,1.0f,0.0f);
 
 		//draw antenae //sp?	
+		//glTranslatef(0.0,0.0,0.5);
+		//gluCylinder(quadratic,0.2f,0.0f,0.5f,8,8);
+		//glTranslatef(0.0,0.0,0.5);
 		glRotatef(-90.0f,1.0f,0.0f,0.0f);
 		antDeg+=antSpeed;
 		glRotatef(-antDeg,0.0f,0.0f,1.0f);
@@ -323,7 +329,6 @@ void drawRobot()
 	//**************************************************************<  END ROBOT
 }
 
-
 void display(void)
 {
 	if(boolpause==0){
@@ -354,10 +359,6 @@ void display(void)
 	
 	}
 }
-
-
-
-
 
 
 void init(int width, int height)
@@ -589,6 +590,7 @@ void pressKey(unsigned char key, int x, int y)
 
 void processHits(GLint hits, GLuint buffer[])
 {
+
 	GLint names, *ptr;
 
 	ptr = (GLint *) buffer; 
@@ -599,6 +601,7 @@ void processHits(GLint hits, GLuint buffer[])
 	if(hits >= 1)
 		Building_Map[*ptr-1] = 0;
 	ptr++;
+
 }
 
 void resize(int width, int height)
@@ -648,7 +651,7 @@ void mouse(int button, int state, int x, int y)
 		glLoadIdentity();
 		
 		robotOrientation();
-		
+
 		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
 		
 		drawBuildings(GL_SELECT);
