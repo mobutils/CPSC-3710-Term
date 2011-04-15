@@ -23,7 +23,7 @@ int deltaZ=0;
 
 // camera control storage variables relative to the robot (local archive)
 int alphaX=-7;
-int alphaY=7;
+int alphaY=60;
 int alphaZ=0;
 
 // view port camera controls (local working)
@@ -42,14 +42,16 @@ float antDeg=0.0;
 float antSpeed=0.1; //30 degrees made it look like a strobe
 float headDeg=0.0;
 
-#define BUILDINGS 10
+#define BUILDINGS 20
+int MaxDistance = BUILDINGS * 10; 
+
 
 //Building Map
 int Building_Map[BUILDINGS*BUILDINGS];
 
 //Ligthing
 GLfloat lightDiffuse[] = {.9, .9, .9, 5.0};
-GLfloat lightPosition[] = {10.0, 50.0, 10.0, 0.5};  /* Infinite light location. */
+GLfloat lightPosition[] = {0.0, 50.0, 0.0, 0.5};  /* Infinite light location. */
 
 GLUquadricObj *quadratic;
 GLuint texture[5];
@@ -128,9 +130,10 @@ if(view!=0){
 			}
 					
 		}
-		if(RobX > 100){ RobX =98; deltaX=98; printf("ERROR CAUGHT (BoundX100)\n");}
+		
+		if(RobX > (MaxDistance)){ RobX = (MaxDistance)-2; deltaX=(MaxDistance)-2; printf("ERROR CAUGHT (BoundX100)\n");}
 		if(RobX < 0)  { RobX = 2; deltaX=2 ; printf("ERROR CAUGHT (BoundX0)\n");}
-		if(RobZ > 100){ RobZ =98; deltaZ=98; printf("ERROR CAUGHT (BoundZ100)\n");}
+		if(RobZ > (MaxDistance)){ RobZ = (MaxDistance)-2; deltaZ=(MaxDistance)-2; printf("ERROR CAUGHT (BoundZ100)\n");}
 		if(RobZ < 0)  { RobZ = 2; deltaZ=2 ; printf("ERROR CAUGHT (BoundZ0)\n");}
 }
 
@@ -145,7 +148,7 @@ void drawBuildings(GLenum mode)
 		for(j=0; j < BUILDINGS; j++)
 		{
 			if(j != 0)
-				glTranslatef(-100.f,0.0f,10.0f);
+				glTranslatef(-MaxDistance,0.0f,10.0f);
 	
 			int i;
 			int index;
@@ -169,34 +172,11 @@ void drawBuildings(GLenum mode)
 			}	
 		}
 		//reset position
-		glTranslatef(-105.0f,0.0f,-95.0f);
+		glTranslatef(-(MaxDistance) - 5.0f,0.0f,-95.0f);
 }
 
-void display(void)
+void drawRobot()
 {
-	if(boolpause==0){
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glLoadIdentity();
-
-		robotOrientation();
-		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
-	
-	
-		//Draw ground
-		glBegin(GL_QUADS);
-			glColor4f(0.0f,1.0f,0.0f,0.0f); //Red corner
-			glVertex3f(0.0f, 0.0f, 0.0f);
-			glVertex3f(0.0f, 0.0f, 100.0f);
-			glVertex3f(100.0f,0.0f,100.0f);
-			glVertex3f(100.0f,0.0f,0.0f);
-		glEnd();
-	
-	
-		//Draw Buildings
-		drawBuildings(GL_RENDER);
-	
-	//*******************************************************************<  START ROBOT
-
 		//Start drawing Robot
 	
 		//reset position
@@ -205,9 +185,8 @@ void display(void)
 		//move to robot position
 		glTranslatef(RobX,RobY,RobZ);
 		
-		
 		// DEBUG: uncomment to verify robot position in global space
-		//printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
+		printf("POS: X: %i Z: %i LOOKAT X: %i Z: %i LOOKFROM X: %i Z: %i\n",RobX,RobZ,deltaX,deltaZ,betaX,betaZ);
 
 		//turn the whole robot
 		glRotatef(-RobOrient,0.0f,1.0f,0.0f);
@@ -342,6 +321,34 @@ void display(void)
 		//turn the matrix back
 		glRotatef(RobOrient,0.0f,1.0f,0.0f);
 	//**************************************************************<  END ROBOT
+}
+
+
+void display(void)
+{
+	if(boolpause==0){
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
+
+		robotOrientation();
+		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
+	
+	
+		//Draw ground
+		glBegin(GL_QUADS);
+			glColor4f(0.0f,1.0f,0.0f,0.0f); //Red corner
+			glVertex3f(0.0f, 0.0f, 0.0f);
+			glVertex3f(0.0f, 0.0f, (float)(MaxDistance));
+			glVertex3f((float)(MaxDistance),0.0f,(float)(MaxDistance));
+			glVertex3f((float)(MaxDistance),0.0f,0.0f);
+		glEnd();
+	
+	
+		//Draw Buildings
+		drawBuildings(GL_RENDER);
+	
+		//Draw Robot
+		drawRobot();
 	
 		glutSwapBuffers();
 	
@@ -365,6 +372,10 @@ void init(int width, int height)
 	quadratic = gluNewQuadric();
 	gluQuadricNormals(quadratic, GLU_SMOOTH);
 	gluQuadricTexture(quadratic, GL_TRUE);
+	
+	//Light Position set to centre
+	lightPosition[0] = (GLfloat)(MaxDistance/2);
+	lightPosition[2] = (GLfloat)(MaxDistance/2);
 	
 	//Set up the sun.
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
@@ -455,7 +466,7 @@ void pressKey(unsigned char key, int x, int y)
 			case 'z':
 				if(RobOrient==0.0){
 					printf ("KEY: Z press detected [DIR=FORWARD]\n");
-					if(deltaX>=0&&deltaX<=100){
+					if(deltaX>=0 && deltaX<=(MaxDistance)){
 						printf ("RESULT: VALID\n");
 						deltaX++;
 						RobX+=1.0;
@@ -470,7 +481,7 @@ void pressKey(unsigned char key, int x, int y)
 				}
 				else if(RobOrient==90.0){
 					printf ("KEY: Z press detected [DIR=LEFT]\n");
-					if(deltaZ>=0&&deltaZ<=100){
+					if(deltaZ>=0 && deltaZ<=(MaxDistance)){
 						printf ("RESULT: VALID\n");
 						deltaZ++;
 						RobZ+=1.0;
@@ -485,7 +496,7 @@ void pressKey(unsigned char key, int x, int y)
 				}
 				else if(RobOrient==180.0){
 					printf ("KEY: Z press detected [DIR=BACK]\n");
-					if(deltaX>=0&&deltaX<=100){
+					if(deltaX>=0&&deltaX<=(MaxDistance)){
 						printf ("RESULT: VALID\n");
 						deltaX--;
 						RobX-=1.0;
@@ -500,7 +511,7 @@ void pressKey(unsigned char key, int x, int y)
 				}
 				else if(RobOrient==270.0){
 					printf ("KEY: Z press detected [DIR=RIGHT]\n");
-					if(deltaZ>=0&&deltaZ<=100){
+					if(deltaZ>=0&&deltaZ<=(float)(MaxDistance)){
 						printf ("RESULT: VALID\n");
 						deltaZ--;
 						RobZ-=1.0;
@@ -578,25 +589,16 @@ void pressKey(unsigned char key, int x, int y)
 
 void processHits(GLint hits, GLuint buffer[])
 {
-   GLint names, *ptr;
+	GLint names, *ptr;
 
-   printf ("hits = %d\n", hits);
-   ptr = (GLint *) buffer; 
-   /*for (i = 0; i < hits; i++) {	
-      
-
-      for (j = 0; j < names; j++) {
-         printf("NAME: %i Array ID: %i",*ptr, *ptr-1);
-         //Remove building from map */	   
-         
-         ptr+=3;
-        names = *ptr;
-        Building_Map[*ptr-1] = 0;
-         
-         printf("Name: %i, ArrayID: %i" , *ptr, *ptr-1);
-         ptr++;
-     	
-     	
+	ptr = (GLint *) buffer; 
+	ptr+=3;
+	names = *ptr;
+	
+	//Remove building from map
+	if(hits >= 1)
+		Building_Map[*ptr-1] = 0;
+	ptr++;
 }
 
 void resize(int width, int height)
@@ -646,6 +648,7 @@ void mouse(int button, int state, int x, int y)
 		glLoadIdentity();
 		
 		robotOrientation();
+		
 		gluLookAt(deltaX+betaX,deltaY+betaY,deltaZ+betaZ,0.0+deltaX,0.0,0.0+deltaZ, 0.0,1.0,0.0);
 		
 		drawBuildings(GL_SELECT);
