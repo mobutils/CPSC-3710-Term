@@ -353,11 +353,11 @@ void display(void)
 	
 		//Draw ground
 		glBegin(GL_QUADS);
-			glColor4f(0.0f,1.0f,0.0f,0.0f); //Red corner
-			glVertex3f(0.0f, 0.0f, 0.0f);
-			glVertex3f(0.0f, 0.0f, (float)(MaxDistance));
-			glVertex3f((float)(MaxDistance),0.0f,(float)(MaxDistance));
-			glVertex3f((float)(MaxDistance),0.0f,0.0f);
+			glColor4f(0.0f,1.0f,0.0f,0.0f); //Green
+			glVertex3f(-5.0f, 0.0f, -5.0f);
+			glVertex3f(-5.0f, 0.0f, (float)(MaxDistance)+5.0f);
+			glVertex3f((float)(MaxDistance)+5.0f,0.0f,(float)(MaxDistance)+5.0f);
+			glVertex3f((float)(MaxDistance)+5.0f,0.0f,-5.0f);
 		glEnd();
 	
 		//Draw Robot
@@ -415,15 +415,15 @@ void keyPressControl(int key, int x, int y)
 			break;	
 			case GLUT_KEY_F2:
 				printf("KEY: F2 press detected\n");
-				if(headDeg >= -180.0){
-					headDeg -= 1.00;
+				if(headDeg >= -179.0){
+					headDeg -= 30.0;
 				}
 				else{printf("sorry the robot can only turn its head so far... press F1 or F3");}
 			break;	
 			case GLUT_KEY_F3:
 				printf("KEY: F3 press detected\n");
-				if(headDeg <= 180){
-					headDeg += 1.0;
+				if(headDeg <= 179.0){
+					headDeg += 30.0;
 				}
 				else{printf("sorry the robot can only turn its head so far... press F1 or F2");}
 			break;
@@ -543,7 +543,7 @@ void pressKey(unsigned char key, int x, int y)
 			case 'r':
 				printf ("KEY: r press detected [RESET ROBOT]\n");
 				deltaX=0;
-				deltaY=0; 
+				//deltaY=0; 
 				deltaZ=0;
 				
 				initMap();
